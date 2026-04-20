@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIRDI — Grant Node OS (R&D)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-primary:#080c10; --bg-secondary:#0d1117; --bg-surface:#111820; --bg-elevated:#161e28;
+  --teal-core:#00c896; --teal-dim:#00c89640; --teal-trace:#00c89615; --teal-text:#00e5aa;
+  --red-deny:#ff4455; --red-dim:#ff445530; --amber-warn:#f5a623; --amber-bg:#f5a62320;
+  --text-primary:#e8edf2; --text-secondary:#7a8fa6; --text-tertiary:#3d5166;
+  --border-dim:#1a2535; --border-mid:#243040; --border-bright:#2e4060;
+  --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+  --container:1140px; --gutter:clamp(1.25rem,4vw,2rem);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--sans);background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border-dim) 1px,transparent 1px),linear-gradient(90deg,var(--border-dim) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;opacity:.3}
+.container{max-width:var(--container);margin:0 auto;padding:0 var(--gutter);position:relative;z-index:1}
+.page-head{padding:2rem 0 1.5rem;border-bottom:1px solid var(--border-dim)}
+.page-head h1{font-family:var(--mono);font-weight:700;font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.01em}
+.page-head__sub{font-family:var(--mono);font-size:11px;color:var(--text-tertiary);letter-spacing:.06em;margin-top:.5rem}
+.golden-rules{background:var(--red-dim);border:1px solid #ff445540;border-radius:8px;padding:.65rem 1rem;margin:1rem 0;font-family:var(--mono);font-size:11px;color:var(--red-deny);display:flex;gap:14px;flex-wrap:wrap}
+.role-bar{display:flex;align-items:center;gap:10px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:8px;padding:.5rem 1rem;margin-bottom:1rem}
+.role-bar__label{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.08em;min-width:70px}
+.role-bar select{flex:1;background:var(--bg-elevated);border:1px solid var(--border-mid);border-radius:4px;color:var(--text-primary);font-family:var(--mono);font-size:12px;padding:5px 9px;outline:none}
+.role-bar select:focus{border-color:var(--teal-core)}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border-dim)}
+.tab{font-family:var(--mono);font-size:11px;padding:5px 11px;border:1px solid var(--border-mid);border-radius:4px;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.tab:hover{border-color:var(--teal-dim);color:var(--teal-text)}
+.tab.active{background:var(--teal-trace);border-color:var(--teal-dim);color:var(--teal-text);font-weight:700}
+.tab__count{margin-left:4px;color:var(--text-tertiary)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
+.metric{background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:8px;padding:.75rem 1rem}
+.metric__label{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.08em;margin-bottom:4px}
+.metric__val{font-family:var(--mono);font-size:1.5rem;font-weight:700}
+.card{background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:8px;padding:.875rem 1rem}
+.card + .card{margin-top:8px}
+.card__title{font-weight:500;font-size:13px;color:var(--text-primary)}
+.card__sub{font-family:var(--mono);font-size:11px;color:var(--text-secondary);margin-top:2px}
+.card__meta{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);margin-top:3px;letter-spacing:.03em}
+.row{display:flex;flex-direction:column;gap:10px}
+.form-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.lbl{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.08em;margin-bottom:4px;display:block}
+input,select,textarea{width:100%;background:var(--bg-elevated);border:1px solid var(--border-mid);border-radius:4px;color:var(--text-primary);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;transition:border-color .15s;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--teal-core)}
+.btn{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:4px;border:1px solid var(--border-mid);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--teal-dim);color:var(--teal-text)}
+.btn--primary{background:var(--teal-core);color:var(--bg-primary);border-color:var(--teal-core);font-weight:700}
+.btn--primary:hover{background:var(--teal-text);border-color:var(--teal-text)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:.04em;font-weight:700;display:inline-block}
+.badge--green{background:var(--teal-trace);color:var(--teal-text);border:1px solid var(--teal-dim)}
+.badge--amber{background:var(--amber-bg);color:var(--amber-warn);border:1px solid #f5a62340}
+.badge--red{background:var(--red-dim);color:var(--red-deny);border:1px solid #ff445540}
+.badge--blue{background:#3b82f620;color:#93c5fd;border:1px solid #3b82f640}
+.badge--purple{background:#a855f720;color:#c084fc;border:1px solid #a855f740}
+.flash{background:var(--teal-trace);border:1px solid var(--teal-dim);border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-family:var(--mono);font-size:12px;color:var(--teal-text);display:flex;justify-content:space-between;align-items:center}
+.sep{border-top:1px solid var(--border-dim);margin:1.5rem 0}
+.h3{font-family:var(--mono);font-weight:700;font-size:13px;margin-bottom:12px}
+.empty{padding:2.5rem 1rem;text-align:center;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;border:1px dashed var(--border-mid);border-radius:8px}
+.receipt{background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:8px;padding:0;overflow:hidden;margin-top:8px}
+.receipt.correction{border-color:#f59e0b80}
+.receipt__head{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;cursor:pointer}
+.receipt__head:hover{background:var(--bg-elevated)}
+.receipt__body{border-top:1px solid var(--border-dim);padding:.65rem 1rem;background:var(--bg-elevated)}
+.receipt__body pre{font-family:var(--mono);font-size:9px;line-height:1.5;white-space:pre-wrap;overflow:auto;max-height:240px;color:var(--text-secondary)}
+.footer{padding:2rem 0;border-top:1px solid var(--border-dim);margin-top:3rem;font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.04em;text-align:center}
+@media (max-width:700px){
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .golden-rules{font-size:10px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="sirdi-connector.js" data-portal="research"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<script>
+const {useState, useEffect} = React;
+const h = React.createElement;
+
+const ROLES = ["Founder / Director","Work Package Lead","Evidence Officer","Verification Officer","Claim Submitter","Subcontractor Approver"];
+const GOV_TYPES = ["Work package approval","Subcontractor approval","Invoice approval","Claim-pack approval","External communication approval","Scope change approval","Benchmark run authorisation","Milestone sign-off"];
+const EV_TYPES = ["timesheet","invoice","bank proof","benchmark output","appendix version","meeting note","decision memo"];
+const EXC_TYPES = ["Late evidence","Missing bank proof","Emergency manual override","Subcontractor delay","Benchmark rerun — failed setup","Scope boundary ambiguity","Missing work-package mapping"];
+const WPS = ["WP1 — Cryptographic spec & architecture","WP2 — Agent benchmarking","WP3 — Verification & testing","WP4 — Dissemination & reporting"];
+
+const SEED_DELIVERY = [
+  {id:"d1",wp:WPS[0],status:"in_progress",milestone:"Spec frozen",due:"2026-05-01"},
+  {id:"d2",wp:WPS[1],status:"not_started",milestone:"5 scenarios run",due:"2026-06-15"},
+  {id:"d3",wp:WPS[2],status:"not_started",milestone:"Chain verified",due:"2026-07-30"},
+  {id:"d4",wp:WPS[3],status:"not_started",milestone:"Final report submitted",due:"2026-08-30"}
+];
+
+async function sha256(s){ const b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+function App(){
+  const [tab, setTab] = useState("overview");
+  const [role, setRole] = useState(ROLES[0]);
+  const [loading, setLoading] = useState(true);
+  const [govItems, setGovItems] = useState([]);
+  const [evidence, setEvidence] = useState([]);
+  const [exceptions, setExceptions] = useState([]);
+  const [delivery, setDelivery] = useState(SEED_DELIVERY);
+  const [freezePacks, setFreezePacks] = useState([]);
+  const [receipts, setReceipts] = useState([]);
+  const [flash, setFlash] = useState(null);
+  const [expandR, setExpandR] = useState(null);
+
+  const [gf, setGf] = useState({type:GOV_TYPES[0], detail:"", wp:WPS[0]});
+  const [ef, setEf] = useState({label:"", type:EV_TYPES[0], ref:""});
+  const [excf, setExcf] = useState({type:EXC_TYPES[0], detail:"", mitigation:""});
+  const [corf, setCorf] = useState({original:"", reason:""});
+
+  useEffect(()=>{ init(); }, []);
+
+  async function init(){
+    let tries = 0;
+    while(!window.SIRDI && tries < 20){ await new Promise(r=>setTimeout(r,100)); tries++; }
+    if(!window.SIRDI){ setLoading(false); return; }
+
+    const [gov, ev, exc, del, pk, rec] = await Promise.all([
+      window.SIRDI.Store.getList('research-gov'),
+      window.SIRDI.Store.getList('research-evidence'),
+      window.SIRDI.Store.getList('research-exceptions'),
+      window.SIRDI.Store.get('research-delivery'),
+      window.SIRDI.Store.getList('research-freezes'),
+      window.SIRDI.Store.getList('receipts')
+    ]);
+    setGovItems(gov || []);
+    setEvidence(ev || []);
+    setExceptions(exc || []);
+    setDelivery(del || SEED_DELIVERY);
+    if(!del) await window.SIRDI.Store.set('research-delivery', SEED_DELIVERY);
+    setFreezePacks(pk || []);
+    setReceipts(rec || []);
+    setLoading(false);
+  }
+
+  async function emit(node, action, target, isCorrection, corrects){
+    const receipt = await window.SIRDI.buildReceipt(node, action, target, {role}, role);
+    if(isCorrection){
+      receipt.is_correction = true;
+      receipt.corrects_receipt = corrects;
+    }
+    const rec = await window.SIRDI.Store.getList('receipts');
+    setReceipts(rec);
+    setFlash({msg: `${action} → ${target}`, id: receipt.receipt_id, correction: isCorrection});
+    setTimeout(()=>setFlash(null), 4000);
+    return receipt;
+  }
+
+  async function approveGov(){
+    if(!gf.detail) return;
+    const item = {id:"g"+Date.now(), ...gf, role, status:"approved", date:new Date().toISOString().split("T")[0]};
+    const next = [item, ...govItems];
+    setGovItems(next);
+    await window.SIRDI.Store.set('research-gov', next);
+    await emit("Governance Node", gf.type, gf.detail);
+    setGf({type:GOV_TYPES[0], detail:"", wp:WPS[0]});
+  }
+
+  async function addEvidence(){
+    if(!ef.label) return;
+    const item = {id:"e"+Date.now(), ...ef, role, date:new Date().toISOString().split("T")[0]};
+    const next = [item, ...evidence];
+    setEvidence(next);
+    await window.SIRDI.Store.set('research-evidence', next);
+    await emit("Evidence Node", "Log evidence", `${ef.type}: ${ef.label}`);
+    setEf({label:"", type:EV_TYPES[0], ref:""});
+  }
+
+  async function addException(){
+    if(!excf.detail) return;
+    const item = {id:"x"+Date.now(), ...excf, role, date:new Date().toISOString().split("T")[0], status:"open"};
+    const next = [item, ...exceptions];
+    setExceptions(next);
+    await window.SIRDI.Store.set('research-exceptions', next);
+    await emit("Evidence Node", "Log exception", `${excf.type}: ${excf.detail}`);
+    setExcf({type:EXC_TYPES[0], detail:"", mitigation:""});
+  }
+
+  async function submitCorrection(){
+    if(!corf.reason || !corf.original) return;
+    await emit("Governance Node", "Correction receipt", `Corrects: ${corf.original}. Reason: ${corf.reason}`, true, corf.original);
+    setCorf({original:"", reason:""});
+  }
+
+  async function setWPStatus(id, status){
+    const next = delivery.map(d => d.id===id ? {...d, status} : d);
+    setDelivery(next);
+    await window.SIRDI.Store.set('research-delivery', next);
+    const d = delivery.find(x=>x.id===id);
+    await emit("Delivery Node", "Update WP status", `${d.wp} → ${status}`);
+  }
+
+  async function freezeClaim(){
+    const packId = "PACK-" + Date.now().toString(36).toUpperCase();
+    const ts = new Date().toISOString();
+    const chainHead = await window.SIRDI.Store.get('chain-head');
+    const includedEv = evidence.filter(e=>e.ref).map(e=>e.label);
+    const missingEv = evidence.filter(e=>!e.ref).map(e=>e.label);
+    const pack = {
+      pack_id:packId, freeze_timestamp:ts,
+      chain_head_at_freeze:chainHead,
+      approved_actions:govItems.filter(g=>g.status==="approved").length,
+      receipts_at_freeze:receipts.length,
+      included_evidence:includedEv,
+      missing_evidence:missingEv,
+      exceptions:exceptions.length,
+      role_at_freeze:role,
+      status:"frozen"
+    };
+    const next = [pack, ...freezePacks];
+    setFreezePacks(next);
+    await window.SIRDI.Store.set('research-freezes', next);
+    await emit("Claim-Pack Node", "Freeze claim pack", `Pack ID: ${packId}. Evidence: ${includedEv.length} included, ${missingEv.length} missing.`);
+  }
+
+  const stBg = s => ({in_progress:"#3b82f620", complete:"var(--teal-trace)", not_started:"var(--bg-elevated)", blocked:"var(--red-dim)"}[s]);
+  const stTx = s => ({in_progress:"#93c5fd", complete:"var(--teal-text)", not_started:"var(--text-secondary)", blocked:"var(--red-deny)"}[s]);
+
+  const m = {receipts: receipts.length, approved: govItems.filter(g=>g.status==="approved").length, evidence: evidence.length, exceptions: exceptions.length};
+
+  if(loading){
+    return h("div",{className:"container",style:{padding:"4rem 0",textAlign:"center",color:"var(--text-tertiary)",fontFamily:"var(--mono)",fontSize:13}},"Loading Grant Node OS...");
+  }
+
+  const TABS = ["overview","governance","evidence","exceptions","delivery","verification","claim-pack"];
+
+  return h("div",null,
+    h("div",{className:"container"},
+      h("div",{className:"page-head"},
+        h("h1",null,"Grant Node OS"),
+        h("div",{className:"page-head__sub"},"R&D · Frontier AI Discovery · £50,000 · GB2605007.0")
+      ),
+      h("div",{className:"golden-rules"},
+        ...["No receipt, no approval","No evidence, no claim","No bank proof, no eligible spend","No WP mapping, no labour entry"].map(r=>h("span",{key:r},r))
+      ),
+      h("div",{className:"role-bar"},
+        h("div",{className:"role-bar__label"},"Acting as"),
+        h("select",{value:role, onChange:e=>setRole(e.target.value)},
+          ...ROLES.map(r=>h("option",{key:r, value:r},r))
+        ),
+        h("span",{className:"badge badge--purple"},role.split(" /")[0].split(" ")[0])
+      ),
+      flash && h("div",{className:"flash"},
+        h("div",null,
+          h("div",{style:{fontWeight:700}},(flash.correction?"Correction receipt":"Receipt generated")+" · ALLOW"),
+          h("div",{style:{fontSize:10,opacity:.85,marginTop:2}},flash.msg)
+        ),
+        h("div",{style:{fontSize:10,color:"var(--text-tertiary)"}},flash.id)
+      ),
+      h("div",{className:"tabs"},
+        ...TABS.map(t=>h("button",{key:t, onClick:()=>setTab(t), className:`tab ${tab===t?"active":""}`},
+          t==="claim-pack"?"Claim-pack":t.charAt(0).toUpperCase()+t.slice(1),
+          t==="exceptions" && exceptions.filter(x=>x.status==="open").length > 0 &&
+            h("span",{className:"tab__count",style:{color:"var(--amber-warn)"}}," "+exceptions.filter(x=>x.status==="open").length)
+        ))
+      ),
+
+      tab==="overview" && h("div",null,
+        h("div",{className:"metrics"},
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"receipts"),h("div",{className:"metric__val"},m.receipts)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"approved"),h("div",{className:"metric__val"},m.approved)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"evidence"),h("div",{className:"metric__val"},m.evidence)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"exceptions"),h("div",{className:"metric__val"},m.exceptions))
+        ),
+        h("div",{className:"h3"},"Five-node overview"),
+        h("div",{className:"row"},
+          ...[
+            {name:"Governance Node", sub:"Gate before every important action", n:m.approved, l:"approved", c:"badge--blue"},
+            {name:"Evidence Node", sub:"Every action linked to a document", n:m.evidence, l:"items", c:"badge--green"},
+            {name:"Exception Register", sub:"Honest record of friction", n:m.exceptions, l:"open", c:"badge--amber"},
+            {name:"Delivery Node", sub:"WP1–WP4 against Gantt", n:delivery.filter(d=>d.status==="complete").length, l:"complete", c:"badge--green"},
+            {name:"Verification Node", sub:"Receipt chain integrity", n:m.receipts, l:"receipts", c:"badge--blue"},
+            {name:"Claim-Pack Node", sub:"Frozen, immutable assurance packs", n:freezePacks.length, l:"frozen", c:"badge--blue"}
+          ].map(n=>h("div",{key:n.name, className:"card",style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}},
+            h("div",null,
+              h("div",{className:"card__title"},n.name),
+              h("div",{className:"card__sub"},n.sub)
+            ),
+            h("span",{className:"badge "+n.c},n.n+" "+n.l)
+          ))
+        ),
+        h("div",{className:"sep"}),
+        h("div",{className:"h3"},"Eight governed action types"),
+        h("div",{className:"row"},
+          ...GOV_TYPES.map((t,i)=>h("div",{key:t,style:{display:"flex",gap:10,fontFamily:"var(--mono)",fontSize:12}},
+            h("span",{style:{color:"var(--text-tertiary)",minWidth:24}},(i+1)+"."),
+            h("span",{style:{color:"var(--text-secondary)"}},t)
+          ))
+        )
+      ),
+
+      tab==="governance" && h("div",null,
+        h("div",{className:"h3"},"Approve a governed action"),
+        h("div",{className:"form-grid"},
+          h("div",null,h("label",{className:"lbl"},"Action type"),h("select",{value:gf.type,onChange:e=>setGf({...gf,type:e.target.value})},...GOV_TYPES.map(t=>h("option",{key:t,value:t},t)))),
+          h("div",null,h("label",{className:"lbl"},"Work package"),h("select",{value:gf.wp,onChange:e=>setGf({...gf,wp:e.target.value})},...WPS.map(w=>h("option",{key:w,value:w},w)))),
+          h("div",null,h("label",{className:"lbl"},"Detail *"),h("textarea",{value:gf.detail,onChange:e=>setGf({...gf,detail:e.target.value}),rows:3,placeholder:"Describe exactly what is being approved..."})),
+          h("button",{className:"btn btn--primary",onClick:approveGov,disabled:!gf.detail,style:{alignSelf:"flex-start"}},"Approve + generate receipt ↗")
+        ),
+        h("div",{className:"sep"}),
+        h("div",{className:"h3"},"Issue a correction receipt"),
+        h("div",{className:"form-grid"},
+          h("div",null,h("label",{className:"lbl"},"Original receipt ID"),h("input",{value:corf.original,onChange:e=>setCorf({...corf,original:e.target.value}),placeholder:"SGN-..."})),
+          h("div",null,h("label",{className:"lbl"},"Reason *"),h("textarea",{value:corf.reason,onChange:e=>setCorf({...corf,reason:e.target.value}),rows:2,placeholder:"What was wrong. What the correct position is."})),
+          h("div",{style:{background:"var(--amber-bg)",borderRadius:4,padding:"5px 10px",fontSize:11,color:"var(--amber-warn)",fontFamily:"var(--mono)"}},"Correction receipts are chained. Originals are never deleted, only annotated."),
+          h("button",{className:"btn btn--primary",onClick:submitCorrection,disabled:!corf.reason||!corf.original,style:{alignSelf:"flex-start"}},"Issue correction ↗")
+        ),
+        govItems.length > 0 && h("div",null,
+          h("div",{className:"sep"}),
+          h("div",{className:"h3"},"Approved actions"),
+          h("div",{className:"row"},
+            ...govItems.slice(0,10).map(g=>h("div",{key:g.id,className:"card"},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}},
+                h("div",null,
+                  h("div",{className:"card__title"},g.type),
+                  h("div",{className:"card__sub"},g.detail),
+                  h("div",{className:"card__meta"},g.wp+" · "+g.date+" · "+g.role)
+                ),
+                h("span",{className:"badge badge--green"},"approved")
+              )
+            ))
+          )
+        )
+      ),
+
+      tab==="evidence" && h("div",null,
+        h("div",{className:"h3"},"Log evidence item"),
+        h("div",{className:"form-grid"},
+          h("div",null,h("label",{className:"lbl"},"Type"),h("select",{value:ef.type,onChange:e=>setEf({...ef,type:e.target.value})},...EV_TYPES.map(t=>h("option",{key:t,value:t},t)))),
+          h("div",null,h("label",{className:"lbl"},"Label / filename *"),h("input",{value:ef.label,onChange:e=>setEf({...ef,label:e.target.value}),placeholder:"e.g. timesheet-may-w2.pdf"})),
+          h("div",null,h("label",{className:"lbl"},"Link to approval ID"),h("input",{value:ef.ref,onChange:e=>setEf({...ef,ref:e.target.value}),placeholder:"SGN-... or WP1 approval note"})),
+          h("button",{className:"btn btn--primary",onClick:addEvidence,disabled:!ef.label,style:{alignSelf:"flex-start"}},"Log evidence + receipt ↗")
+        ),
+        evidence.length > 0 && h("div",null,
+          h("div",{className:"sep"}),
+          h("div",{className:"h3"},"Evidence spine"),
+          h("div",{className:"row"},
+            ...evidence.slice(0,15).map(e=>h("div",{key:e.id,className:"card"},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10}},
+                h("div",null,
+                  h("div",{className:"card__title"},e.label),
+                  h("div",{className:"card__sub"},e.type+(e.ref?" · ref: "+e.ref:"")),
+                  h("div",{className:"card__meta"},e.date+" · "+e.role)
+                ),
+                h("span",{className:e.ref?"badge badge--green":"badge badge--amber"},e.ref?"linked":"unlinked")
+              )
+            ))
+          )
+        )
+      ),
+
+      tab==="exceptions" && h("div",null,
+        h("div",{style:{background:"var(--amber-bg)",border:"1px solid #fcd34d40",borderRadius:8,padding:".625rem 1rem",marginBottom:"1rem",fontSize:12,color:"var(--amber-warn)",fontFamily:"var(--mono)"}},
+          "Exceptions are honest records of friction. They improve audit credibility — do not hide them."
+        ),
+        h("div",{className:"h3"},"Log an exception"),
+        h("div",{className:"form-grid"},
+          h("div",null,h("label",{className:"lbl"},"Class"),h("select",{value:excf.type,onChange:e=>setExcf({...excf,type:e.target.value})},...EXC_TYPES.map(t=>h("option",{key:t,value:t},t)))),
+          h("div",null,h("label",{className:"lbl"},"What happened *"),h("textarea",{value:excf.detail,onChange:e=>setExcf({...excf,detail:e.target.value}),rows:2,placeholder:"Describe exactly what happened and when."})),
+          h("div",null,h("label",{className:"lbl"},"Mitigation"),h("input",{value:excf.mitigation,onChange:e=>setExcf({...excf,mitigation:e.target.value}),placeholder:"What was done or will be done."})),
+          h("button",{className:"btn btn--primary",onClick:addException,disabled:!excf.detail,style:{alignSelf:"flex-start"}},"Log exception + receipt ↗")
+        ),
+        exceptions.length > 0 && h("div",null,
+          h("div",{className:"sep"}),
+          h("div",{className:"h3"},"Exception register"),
+          h("div",{className:"row"},
+            ...exceptions.map(x=>h("div",{key:x.id,className:"card",style:{borderColor:"#fcd34d80"}},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}},
+                h("div",null,
+                  h("div",{className:"card__title"},x.type),
+                  h("div",{className:"card__sub"},x.detail),
+                  x.mitigation && h("div",{style:{fontSize:12,color:"var(--teal-text)",marginTop:4,fontFamily:"var(--mono)"}},"Mitigation: "+x.mitigation),
+                  h("div",{className:"card__meta"},x.date+" · "+x.role)
+                ),
+                h("span",{className:"badge badge--amber"},x.status)
+              )
+            ))
+          )
+        )
+      ),
+
+      tab==="delivery" && h("div",null,
+        h("div",{className:"h3"},"WP delivery tracker"),
+        h("div",{className:"row"},
+          ...delivery.map(d=>h("div",{key:d.id,className:"card"},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10,marginBottom:10}},
+              h("div",null,
+                h("div",{className:"card__title"},d.wp),
+                h("div",{className:"card__sub"},"Milestone: "+d.milestone),
+                h("div",{className:"card__meta"},"Due: "+d.due)
+              ),
+              h("span",{style:{fontFamily:"var(--mono)",fontSize:10,padding:"3px 8px",borderRadius:3,fontWeight:700,background:stBg(d.status),color:stTx(d.status)}},d.status.replace("_"," "))
+            ),
+            h("div",{style:{display:"flex",gap:5,flexWrap:"wrap"}},
+              ...["not_started","in_progress","complete","blocked"].map(s=>
+                h("button",{key:s,onClick:()=>setWPStatus(d.id,s),className:"btn",style:d.status===s?{background:stBg(s),color:stTx(s),borderColor:"var(--teal-dim)"}:{}},s.replace("_"," "))
+              )
+            )
+          ))
+        )
+      ),
+
+      tab==="verification" && h("div",null,
+        h("div",{className:"h3"},"Chain verification"),
+        h("div",{className:"metrics",style:{marginBottom:16}},
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"Receipts"),h("div",{className:"metric__val"},m.receipts)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"Corrections"),h("div",{className:"metric__val"},receipts.filter(r=>r.is_correction).length)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"Exceptions"),h("div",{className:"metric__val"},m.exceptions)),
+          h("div",{className:"metric"},h("div",{className:"metric__label"},"Chain head"),h("div",{style:{fontFamily:"var(--mono)",fontSize:10,marginTop:8,color:"var(--text-tertiary)"}},"live"))
+        ),
+        receipts.length === 0 && h("div",{className:"empty"},"No receipts yet."),
+        h("div",{className:"row"},
+          ...receipts.slice(0,15).map(r=>h("div",{key:r.receipt_id,className:`receipt ${r.is_correction?"correction":""}`},
+            h("div",{className:"receipt__head",onClick:()=>setExpandR(expandR===r.receipt_id?null:r.receipt_id)},
+              h("div",null,
+                h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+                  h("span",{className:r.is_correction?"badge badge--amber":"badge badge--green"},r.is_correction?"CORRECTION":"ALLOW"),
+                  h("span",{style:{fontWeight:500,fontSize:12,fontFamily:"var(--mono)"}},r.action?.type||r.action||"action")
+                ),
+                h("div",{className:"card__meta"},(r.node||"—")+" · "+(r.timestamp?.slice(0,16).replace("T"," ")||"—")+" · "+(r.actor_role||r.role||"—"))
+              ),
+              h("span",{style:{color:"var(--text-tertiary)",fontSize:11}},expandR===r.receipt_id?"▲":"▼")
+            ),
+            expandR===r.receipt_id && h("div",{className:"receipt__body"},
+              h("pre",null,JSON.stringify(r,null,2))
+            )
+          ))
+        )
+      ),
+
+      tab==="claim-pack" && h("div",null,
+        h("div",{className:"h3"},"Immutable claim freeze"),
+        h("div",{style:{background:"#3b82f620",border:"1px solid #3b82f640",borderRadius:8,padding:".625rem 1rem",marginBottom:"1rem",fontSize:12,color:"#93c5fd",fontFamily:"var(--mono)"}},
+          "Freezing creates a tamper-evident snapshot. Pack ID, chain head, evidence list are fixed at this moment. Post-freeze changes will be visible as deviation."
+        ),
+        h("div",{className:"row",style:{marginBottom:16}},
+          ...[
+            [govItems.filter(g=>g.status==="approved").length>0,"Governance approvals logged"],
+            [evidence.length>0,"Evidence items in spine"],
+            [evidence.filter(e=>e.ref).length>0,"Evidence linked to approvals"],
+            [evidence.filter(e=>e.type==="bank proof").length>0,"Bank proof logged"],
+            [evidence.filter(e=>e.type==="timesheet").length>0,"Timesheets logged"],
+            [receipts.length>0,"Receipt chain exists"]
+          ].map(([ok,l])=>h("div",{key:l,style:{display:"flex",alignItems:"center",gap:10,fontSize:13}},
+            h("span",{className:ok?"badge badge--green":"badge badge--amber"},ok?"ready":"missing"),
+            h("span",{style:{fontFamily:"var(--mono)",fontSize:12,color:"var(--text-secondary)"}},l)
+          ))
+        ),
+        h("button",{className:"btn btn--primary",onClick:freezeClaim},"Freeze claim pack + receipt ↗"),
+        freezePacks.length > 0 && h("div",null,
+          h("div",{className:"sep"}),
+          h("div",{className:"h3"},"Frozen packs"),
+          h("div",{className:"row"},
+            ...freezePacks.map(p=>h("div",{key:p.pack_id,className:"card"},
+              h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10,marginBottom:8}},
+                h("div",null,
+                  h("div",{className:"card__title",style:{fontFamily:"var(--mono)"}},p.pack_id),
+                  h("div",{className:"card__meta"},"Frozen: "+p.freeze_timestamp.slice(0,16).replace("T"," ")),
+                  h("div",{className:"card__meta"},"Chain head at freeze: "+((p.chain_head_at_freeze||"").slice(0,18)+"..."))
+                ),
+                h("span",{className:"badge badge--green"},"frozen")
+              ),
+              h("div",{style:{display:"flex",gap:14,fontFamily:"var(--mono)",fontSize:11,color:"var(--text-secondary)",flexWrap:"wrap"}},
+                h("span",null,p.approved_actions+" approved"),
+                h("span",null,p.receipts_at_freeze+" receipts"),
+                h("span",null,p.included_evidence.length+" evidence"),
+                p.missing_evidence.length > 0 && h("span",{style:{color:"var(--amber-warn)"}},p.missing_evidence.length+" missing"),
+                h("span",{style:{color:"#c084fc"}},p.role_at_freeze)
+              )
+            ))
+          )
+        )
+      ),
+
+      h("div",{className:"footer"},"v0.1.0 · research · GB2605007.0 · local prototype chain · external integrations pending")
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(h(App));
+</script>
+</body>
+</html>

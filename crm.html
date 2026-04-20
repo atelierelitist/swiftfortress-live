@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIRDI — Pipeline (CRM)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-primary:#080c10; --bg-secondary:#0d1117; --bg-surface:#111820; --bg-elevated:#161e28;
+  --teal-core:#00c896; --teal-dim:#00c89640; --teal-trace:#00c89615; --teal-text:#00e5aa;
+  --red-deny:#ff4455; --red-dim:#ff445530; --amber-warn:#f5a623; --amber-bg:#f5a62320;
+  --text-primary:#e8edf2; --text-secondary:#7a8fa6; --text-tertiary:#3d5166;
+  --border-dim:#1a2535; --border-mid:#243040; --border-bright:#2e4060;
+  --mono:'Space Mono',monospace; --sans:'DM Sans',sans-serif;
+  --radius-sm:4px; --radius-md:8px; --radius-lg:14px;
+  --container:1140px; --gutter:clamp(1.25rem,4vw,2rem);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--sans);background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border-dim) 1px,transparent 1px),linear-gradient(90deg,var(--border-dim) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;opacity:.3}
+.container{max-width:var(--container);margin:0 auto;padding:0 var(--gutter);position:relative;z-index:1}
+.page-head{padding:2rem 0 1.5rem;border-bottom:1px solid var(--border-dim)}
+.page-head h1{font-family:var(--mono);font-weight:700;font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.01em}
+.page-head__sub{font-family:var(--mono);font-size:11px;color:var(--text-tertiary);letter-spacing:.06em;margin-top:.5rem}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:1.5rem 0}
+.metric{background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--radius-md);padding:.875rem 1rem}
+.metric__label{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.08em;margin-bottom:4px}
+.metric__val{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--text-primary)}
+.metric--danger .metric__val{color:var(--red-deny)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;justify-content:space-between}
+.filters__group{display:flex;gap:5px;flex-wrap:wrap}
+.filter-btn{font-family:var(--mono);font-size:11px;padding:5px 10px;border:1px solid var(--border-mid);border-radius:4px;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--teal-dim);color:var(--teal-text)}
+.filter-btn.active{background:var(--teal-trace);border-color:var(--teal-dim);color:var(--teal-text);font-weight:700}
+.filter-btn .count{color:var(--text-tertiary);margin-left:4px}
+.prospects{display:flex;flex-direction:column;gap:10px}
+.prospect{background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--radius-md);padding:1rem 1.25rem;transition:border-color .15s}
+.prospect:hover{border-color:var(--border-bright)}
+.prospect.overdue{border-color:#ff445544}
+.prospect__top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.prospect__name{font-weight:500;font-size:14px;color:var(--text-primary)}
+.prospect__company{font-size:13px;color:var(--text-secondary);margin-left:6px}
+.prospect__signal{font-size:12px;color:var(--text-tertiary);margin-top:4px;font-family:var(--mono)}
+.prospect__meta{display:flex;align-items:center;gap:10px;margin-top:.75rem;flex-wrap:wrap}
+.prospect__meta-item{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.04em}
+.prospect__actions{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.stage-badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;letter-spacing:.04em;white-space:nowrap;font-weight:700}
+.stage-new{background:#3d516640;color:var(--text-secondary)}
+.stage-connected{background:#dbeafe30;color:#93c5fd}
+.stage-messaged{background:var(--amber-bg);color:var(--amber-warn)}
+.stage-replied,.stage-call_booked,.stage-pilot_accepted{background:var(--teal-trace);color:var(--teal-text)}
+.stage-not_converted{background:var(--red-dim);color:var(--red-deny)}
+.btn{font-family:var(--mono);font-size:11px;padding:5px 11px;border-radius:4px;border:1px solid var(--border-mid);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--teal-dim);color:var(--teal-text)}
+.btn--primary{background:var(--teal-core);color:var(--bg-primary);border-color:var(--teal-core);font-weight:700}
+.btn--primary:hover{background:var(--teal-text);border-color:var(--teal-text);color:var(--bg-primary)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.section{padding:2rem 0}
+.footer{padding:2rem 0;border-top:1px solid var(--border-dim);margin-top:3rem;font-family:var(--mono);font-size:10px;color:var(--text-tertiary);letter-spacing:.04em;text-align:center}
+.empty{padding:3rem 1rem;text-align:center;color:var(--text-tertiary);font-family:var(--mono);font-size:13px;border:1px dashed var(--border-mid);border-radius:var(--radius-md)}
+.flash{background:var(--teal-trace);border:1px solid var(--teal-dim);border-radius:var(--radius-md);padding:.75rem 1rem;margin-bottom:1rem;font-family:var(--mono);font-size:12px;color:var(--teal-text);display:flex;justify-content:space-between;align-items:center}
+.flash__id{font-size:10px;color:var(--text-tertiary)}
+a{color:var(--teal-text);text-decoration:none}
+a:hover{text-decoration:underline}
+@media (max-width:700px){
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prospect__actions{width:100%;margin-left:0;margin-top:.5rem}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="sirdi-connector.js" data-portal="crm"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<script>
+const {useState, useEffect} = React;
+const h = React.createElement;
+
+const STAGE_LABELS = {
+  new:"New", connected:"Connected", messaged:"Messaged", replied:"Replied",
+  call_booked:"Call Booked", pilot_accepted:"Pilot Accepted", not_converted:"Not Converted"
+};
+const STAGE_ORDER = ["new","connected","messaged","replied","call_booked","pilot_accepted"];
+
+const SEED_PROSPECTS = [
+  {name:"Rick Jones",company:"DigitalXRAID",signal:"Security-led MSSP, compliance focus",stage:"messaged",url:"https://linkedin.com/in/rick-jones-digitalxraid",last_contact:"2026-03-28"},
+  {name:"Keven Knight",company:"Talion",signal:"Defence-origin MSSP, Hybrid SOC, ISO27001",stage:"messaged",url:"https://linkedin.com/in/keven-knight",last_contact:"2026-03-28"},
+  {name:"Roy Castleman",company:"EC-MSP Ltd",signal:"Cyber Essentials, compliance for SMEs",stage:"new",url:"https://uk.linkedin.com/in/roycastleman"},
+  {name:"Gavin Russell",company:"Wavex Technology Ltd",signal:"ISO 27001, finance/legal clients",stage:"new",url:"https://uk.linkedin.com/in/gavinrussell1"},
+  {name:"Daryl Baker",company:"Tech Solutions (MSP)",signal:"Data integrity focus, Owner/MD",stage:"new",url:"https://uk.linkedin.com/in/daryljbaker"},
+  {name:"Anthony Gbadamosi",company:"IT Solutions Consultancy",signal:"Security governance, regulated sectors",stage:"new",url:"https://uk.linkedin.com/in/agbadamosi"},
+  {name:"Lewis Livingstone",company:"Microbyte MSP",signal:"Cyber Essentials advocate, decision-maker",stage:"new",url:"https://uk.linkedin.com/in/lewislivingstone"},
+  {name:"Darren Strong",company:"Scalable / Focus Technology",signal:"20+ yrs MSP founder, multiplier",stage:"new",url:"https://uk.linkedin.com/in/darren-strong"},
+  {name:"Monique Goodwin",company:"Purity IT",signal:"MD, 23yrs cyber/IT, pain-easing ethos",stage:"new",url:"https://uk.linkedin.com/in/moniquegoodwin"},
+  {name:"Barry Ruston",company:"Single Point Provider MSP",signal:"Owner, full-stack MSP, decisive buyer",stage:"new",url:"https://uk.linkedin.com/in/barry-ruston-06b79426"},
+  {name:"Tim Rookes",company:"Truly SMB",signal:"CEO, profitability-focused",stage:"new",url:"https://uk.linkedin.com/in/timrookes"}
+];
+
+function daysSince(d){ if(!d) return null; return Math.floor((Date.now()-new Date(d))/86400000); }
+function isOverdue(opp){
+  if(!opp) return false;
+  if(["pilot_accepted","not_converted"].includes(opp.stage)) return false;
+  if(!opp.last_contact) return opp.stage !== "new";
+  return daysSince(opp.last_contact) > 3;
+}
+
+function App(){
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [flash, setFlash] = useState(null);
+
+  useEffect(()=>{ init(); }, []);
+
+  async function init(){
+    let tries = 0;
+    while(!window.SIRDI && tries < 20){ await new Promise(r=>setTimeout(r,100)); tries++; }
+    if(!window.SIRDI){ setLoading(false); return; }
+
+    let existing = await window.SIRDI.getLeads();
+    if(!existing || existing.length === 0){
+      for(const p of SEED_PROSPECTS){
+        const contact = window.SIRDI.Schema.Contact({name:p.name, company:p.company, source:"seed", tooling:p.url||""});
+        await window.SIRDI.Store.pushToList('contacts', contact);
+        const org = window.SIRDI.Schema.Organisation({name:p.company});
+        await window.SIRDI.Store.pushToList('organisations', org);
+        const opp = window.SIRDI.Schema.Opportunity({
+          contact_id:contact.id, org_id:org.id,
+          stage:p.stage, source:"seed", last_contact:p.last_contact||null,
+          notes: p.signal ? [p.signal] : []
+        });
+        await window.SIRDI.Store.pushToList('opportunities', opp);
+      }
+      existing = await window.SIRDI.getLeads();
+    }
+    setLeads(existing);
+    setLoading(false);
+
+    window.addEventListener('sirdi:lead-captured', async ()=>{
+      const fresh = await window.SIRDI.getLeads();
+      setLeads(fresh);
+      setFlash({msg:"New lead captured from landing page", id:fresh[0]?.id});
+      setTimeout(()=>setFlash(null), 4000);
+    });
+  }
+
+  async function advanceStage(lead){
+    if(!lead.opportunity) return;
+    const idx = STAGE_ORDER.indexOf(lead.opportunity.stage);
+    const next = idx < STAGE_ORDER.length-1 ? STAGE_ORDER[idx+1] : lead.opportunity.stage;
+    if(next === lead.opportunity.stage) return;
+    const receipt = await window.SIRDI.advanceStage(lead.opportunity.id, next, "Founder / Director");
+    const fresh = await window.SIRDI.getLeads();
+    setLeads(fresh);
+    setFlash({msg:`${lead.name} → ${STAGE_LABELS[next]}`, id:receipt?.receipt_id});
+    setTimeout(()=>setFlash(null), 3500);
+  }
+
+  if(loading){
+    return h("div",{className:"container",style:{padding:"4rem 0",textAlign:"center",color:"var(--text-tertiary)",fontFamily:"var(--mono)",fontSize:13}},"Loading pipeline...");
+  }
+
+  const opps = leads.filter(l=>l.opportunity);
+  const overdue = opps.filter(l=>isOverdue(l.opportunity));
+  const filtered = filter === "all" ? leads
+    : filter === "overdue" ? leads.filter(l=>isOverdue(l.opportunity))
+    : leads.filter(l => l.opportunity?.stage === filter);
+
+  const metrics = {
+    total: leads.length,
+    active: opps.filter(l=>!["pilot_accepted","not_converted"].includes(l.opportunity.stage)).length,
+    engaged: opps.filter(l=>["replied","call_booked","pilot_accepted"].includes(l.opportunity.stage)).length,
+    overdue: overdue.length
+  };
+
+  return h("div",null,
+    h("div",{className:"container"},
+      h("div",{className:"page-head"},
+        h("h1",null,"Pipeline"),
+        h("div",{className:"page-head__sub"},"CRM · SIRDI Spine · governed prospect records")
+      ),
+      h("div",{className:"metrics"},
+        h("div",{className:"metric"},h("div",{className:"metric__label"},"total"),h("div",{className:"metric__val"},metrics.total)),
+        h("div",{className:"metric"},h("div",{className:"metric__label"},"active"),h("div",{className:"metric__val"},metrics.active)),
+        h("div",{className:"metric"},h("div",{className:"metric__label"},"engaged"),h("div",{className:"metric__val"},metrics.engaged)),
+        h("div",{className:metrics.overdue>0 ? "metric metric--danger":"metric"},h("div",{className:"metric__label"},"overdue"),h("div",{className:"metric__val"},metrics.overdue))
+      ),
+      flash && h("div",{className:"flash"},
+        h("div",null,
+          h("div",{style:{fontWeight:700}},"Receipt generated · ALLOW"),
+          h("div",{style:{fontSize:11,opacity:.85,marginTop:2}},flash.msg)
+        ),
+        flash.id && h("div",{className:"flash__id"},flash.id)
+      ),
+      h("div",{className:"filters"},
+        h("div",{className:"filters__group"},
+          ...["all","overdue","new","connected","messaged","replied","call_booked","pilot_accepted"].map(f=>{
+            const count = f==="all"?leads.length : f==="overdue"?metrics.overdue : opps.filter(l=>l.opportunity.stage===f).length;
+            return h("button",{key:f, onClick:()=>setFilter(f), className:`filter-btn ${filter===f?"active":""}`},
+              f==="call_booked"?"Call booked":f==="pilot_accepted"?"Pilot":f.charAt(0).toUpperCase()+f.slice(1),
+              " ", h("span",{className:"count"},count)
+            );
+          })
+        )
+      ),
+      h("div",{className:"section",style:{paddingTop:0}},
+        filtered.length === 0
+          ? h("div",{className:"empty"},"No prospects in this view.")
+          : h("div",{className:"prospects"},
+              filtered.map(lead=>{
+                const opp = lead.opportunity;
+                const overdueFlag = opp && isOverdue(opp);
+                const ds = opp ? daysSince(opp.last_contact) : null;
+                return h("div",{key:lead.id, className:`prospect ${overdueFlag?"overdue":""}`},
+                  h("div",{className:"prospect__top"},
+                    h("div",{style:{flex:1,minWidth:0}},
+                      h("div",null,
+                        h("span",{className:"prospect__name"},lead.name),
+                        h("span",{className:"prospect__company"},lead.company)
+                      ),
+                      h("div",{className:"prospect__signal"},
+                        opp?.notes?.[0] || "—"
+                      ),
+                      h("div",{className:"prospect__meta"},
+                        h("span",{className:"prospect__meta-item"},ds!==null?`${ds}d ago`:"not contacted"),
+                        lead.source === "landing-page" && h("span",{className:"prospect__meta-item",style:{color:"var(--teal-text)"}},"inbound")
+                      )
+                    ),
+                    h("div",{className:"prospect__actions"},
+                      opp && h("span",{className:`stage-badge stage-${opp.stage}`},STAGE_LABELS[opp.stage]),
+                      lead.tooling && lead.tooling.startsWith("http") && h("a",{href:lead.tooling, target:"_blank", className:"btn"},"LinkedIn ↗"),
+                      opp && !["pilot_accepted","not_converted"].includes(opp.stage) && 
+                        h("button",{className:"btn btn--primary", onClick:()=>advanceStage(lead)},"Advance ↗")
+                    )
+                  )
+                );
+              })
+            )
+      ),
+      h("div",{className:"footer"},"v0.1.0 · crm · GB2605007.0 · local prototype chain · external integrations pending")
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(h(App));
+</script>
+</body>
+</html>
