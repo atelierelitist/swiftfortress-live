@@ -347,8 +347,8 @@
 
     const PORTALS = [
       { id: 'landing',  label: 'swift fortress', href: '/',         badge: null  },
-      { id: 'crm',      label: 'pipeline',       href: '/crm.html',      badge: 'CRM' },
-      { id: 'research', label: 'grant node os',  href: '/research.html', badge: 'R&D' },
+      { id: 'crm',      label: 'pipeline',       href: 'crm.html',      badge: 'CRM' },
+      { id: 'research', label: 'grant node os',  href: 'research.html', badge: 'R&D' },
     ];
 
     function inject(currentPortal) {
@@ -368,7 +368,7 @@
       const html =
         '<nav class="sirdi-portal-nav" role="navigation" aria-label="SIRDI portal navigation">' +
           '<div class="sirdi-portal-nav__inner">' +
-            '<a href="/" class="sirdi-portal-nav__brand">' +
+            '<a href="index.html" class="sirdi-portal-nav__brand">' +
               '<div class="sirdi-portal-nav__brand-mark">' +
                 '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1L13 4V10L7 13L1 10V4L7 1Z"/></svg>' +
               '</div>SIRDI</a>' +
