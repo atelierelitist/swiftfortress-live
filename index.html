@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="SIRDI — Pre-execution governance for AI agents. Cryptographic decision receipts before privileged actions execute. Patent pending GB2605007.0.">
 <meta property="og:title" content="SIRDI — Proof Before Execution">
-<meta property="og:description" content="Can you prove a privileged action was authorised before it executed? SIRDI can.">
+<meta property="og:description" content="Can you prove a privileged action was authorised before it executed? SIRDI is designed to.">
 <meta property="og:type" content="website">
 <title>SIRDI — Pre-Execution Governance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -611,6 +611,11 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
   font-family: var(--mono);
   font-size: 10px;
 }
+@media (max-width: 600px) {
+  .layer { flex-wrap: wrap; gap: 0.75rem; padding: 1rem; }
+  .layer__title { min-width: 0; }
+  .layer__desc { flex-basis: 100%; }
+}
 
 /* ═══════════════════════════════════════════════
    FOR WHOM MODULE
@@ -818,12 +823,15 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 /* ═══════════════════════════════════════════════
    ANIMATIONS
 ═══════════════════════════════════════════════ */
-.fade-in {
+.anim-ready .fade-in {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.fade-in.visible {
+@media (prefers-reduced-motion: reduce) {
+  .anim-ready .fade-in { opacity: 1; transform: none; transition: none; }
+}
+.anim-ready .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -884,7 +892,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <em>execution<span class="cursor"></span></em>
         </h1>
         <p class="lead">
-          Every privileged AI action — intercepted, verified, signed, and receipted before it runs. Not logged afterwards. Proved before.
+          SIRDI is a gate, not a logger. It is designed to establish that a consequential action is authorised before it runs, and to produce a verifiable Receipt of that authorisation.
         </p>
         <div class="hero__actions">
           <a href="#access" class="btn btn--primary">Request early access</a>
@@ -895,26 +903,12 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <span class="trust-item">SHA-256</span>
           <span class="trust-item">Ed25519</span>
           <span class="trust-item">Six-layer verifier</span>
-          <span class="trust-item">EU AI Act ready</span>
         </div>
       </div>
 
-      <div class="hero__visual fade-in fade-in-delay-2" aria-hidden="true">
-        <div class="receipt-stack">
-          <!-- Back receipt -->
-          <div class="receipt-card">
-            <div class="receipt-card__header">
-              <span class="receipt-card__id">SGN-7F3A2B-E91C</span>
-              <span class="badge badge--deny">DENY</span>
-            </div>
-          </div>
-          <!-- Mid receipt -->
-          <div class="receipt-card">
-            <div class="receipt-card__header">
-              <span class="receipt-card__id">SGN-4D8E1A-C72F</span>
-              <span class="badge badge--allow">ALLOW</span>
-            </div>
-          </div>
+      <div class="hero__visual fade-in fade-in-delay-2">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;color:var(--text-tertiary);margin-bottom:2rem;text-transform:uppercase;">Illustrative receipt · sample data</div>
+        <div class="receipt-stack" role="img" aria-label="Illustrative SIRDI receipt with sample data: action DEPLOY_FIREWALL_RULE, decision ALLOW, human approval recorded, signed with Ed25519">
           <!-- Front receipt -->
           <div class="receipt-card">
             <div class="receipt-card__scan"></div>
@@ -955,6 +949,20 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
               <span class="receipt-card__decision-value">ALLOW ✓</span>
             </div>
           </div>
+          <!-- Mid receipt -->
+          <div class="receipt-card" aria-hidden="true">
+            <div class="receipt-card__header">
+              <span class="receipt-card__id">SGN-4D8E1A-C72F</span>
+              <span class="badge badge--allow">ALLOW</span>
+            </div>
+          </div>
+          <!-- Back receipt -->
+          <div class="receipt-card" aria-hidden="true">
+            <div class="receipt-card__header">
+              <span class="receipt-card__id">SGN-7F3A2B-E91C</span>
+              <span class="badge badge--deny">DENY</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -971,7 +979,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
       Can you prove a privileged action was <strong>authorised before it executed</strong> — not just logged afterwards?
     </p>
     <p class="wedge__answer">
-      Post-hoc logs are confessions, not defences. SIRDI generates tamper-evident, independently verifiable proof at the point of authorisation — before the action runs.
+      Logs written after the fact show what was recorded. On their own, they don't prove an action was authorised before it ran. SIRDI is designed to produce tamper-evident proof at the point of authorisation, before the action runs, that can be checked with a standalone verifier.
     </p>
   </div>
 </section>
@@ -988,19 +996,19 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         <div class="contrast-grid__label">without SIRDI</div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>AI agents execute privileged actions with no pre-execution authorisation gate</span>
+          <span>Privileged AI-agent actions may execute without an independent pre-execution gate</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Audit logs are controlled by the same operator who ran the action — not independently verifiable</span>
+          <span>Where audit logs are controlled by the operator who ran the action, independent checking is limited</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Insurance claims, regulatory reviews, and client disputes rely on self-reported evidence</span>
+          <span>Insurance claims, regulatory reviews and client disputes often need evidence beyond the operator's own account</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>EU AI Act high-risk obligations require proof of authorisation you cannot produce</span>
+          <span>Who approved what has to be pieced together afterwards from emails, tickets and logs</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
@@ -1011,23 +1019,23 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         <div class="contrast-grid__label">with SIRDI</div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Every privileged action is intercepted and evaluated before it runs — deny-by-default</span>
+          <span>Designed to check privileged actions before they run, deny-by-default; live enforcement depends on an integrated execution adapter</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Cryptographic receipts are independently verifiable — no need to trust the operator's log</span>
+          <span>Receipts are verifiable with the standalone kit, without relying on the operator's own log</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Hash-chained receipt chain provides tamper-evident proof across the full action history</span>
+          <span>Hash-chained receipts provide tamper-evident evidence for recorded decisions</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Portable evidence survives disputes, audits, and regulatory review without operator dependency</span>
+          <span>Portable receipts can be checked independently during evidence review, without relying on the operator</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Agent-agnostic — governs OpenClaw, Agent Zero, and any autonomous action pipeline</span>
+          <span>Designed for agent integration — benchmarked with OpenClaw and Agent Zero</span>
         </div>
       </div>
     </div>
@@ -1040,7 +1048,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 <section class="section section--alt" id="how-it-works" aria-labelledby="hiw-heading">
   <div class="container">
     <span class="label-tag">the mechanism</span>
-    <h2 id="hiw-heading" style="margin-bottom:2.5rem;">How SIRDI works</h2>
+    <h2 id="hiw-heading" style="margin-bottom:2.5rem;">How SIRDI is designed to work</h2>
     <div class="steps fade-in">
       <div class="step">
         <div class="step__num">01</div>
@@ -1048,7 +1056,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div class="step__title">Intercept</div>
-        <div class="step__body">SIRDI sits between your AI agent and the target system. Every privileged action hits the governance gate before it reaches execution.</div>
+        <div class="step__body">SIRDI is designed to place a governance gate between an AI agent and the system it acts on, so privileged actions reach the gate before execution.</div>
       </div>
       <div class="step">
         <div class="step__num">02</div>
@@ -1056,7 +1064,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <div class="step__title">Evaluate</div>
-        <div class="step__body">Six verification layers run in sequence: policy, risk scoring, intent confirmation, human gate, cryptographic signature, and chain linkage.</div>
+        <div class="step__body">Policy, risk and human-approval checks run before any decision is issued. Each approval is designed to bind to the exact action and scope it covers.</div>
       </div>
       <div class="step">
         <div class="step__num">03</div>
@@ -1064,7 +1072,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
         </div>
         <div class="step__title">Sign</div>
-        <div class="step__body">A tamper-evident receipt is generated and cryptographically signed using Ed25519. The receipt is hash-chained to every previous governed decision.</div>
+        <div class="step__body">A tamper-evident receipt is generated, signed with Ed25519 and hash-chained to previous decisions. Receipts from the SIRDI benchmark harness are signed this way and verify with the standalone kit.</div>
       </div>
       <div class="step">
         <div class="step__num">04</div>
@@ -1072,7 +1080,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
         </div>
         <div class="step__title">Gate</div>
-        <div class="step__body">ALLOW or DENY is returned before execution. The receipt is portable — any third party can verify the chain without trusting your runtime.</div>
+        <div class="step__body">An ALLOW or DENY decision is issued before the action proceeds. The benchmark harness demonstrates this for modelled actions; live enforcement needs an execution adapter validated in your environment. The receipt is portable: a third party can check it with the standalone kit, without access to your runtime.</div>
       </div>
     </div>
   </div>
@@ -1085,49 +1093,49 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
   <div class="container">
     <span class="label-tag">the verifier</span>
     <h2 id="layers-heading" style="margin-bottom: 0.5rem;">Six-layer verification</h2>
-    <p class="lead" style="margin-bottom:2.5rem;">Every SIRDI receipt passes six independent checks before a decision is issued. All six must clear for ALLOW.</p>
+    <p class="lead" style="margin-bottom:2.5rem;">The first five checks run on the receipt bundle alone. Replay detection also needs the session registry.</p>
     <div class="layers fade-in">
       <div class="layer">
         <span class="layer__num">L1</span>
         <div class="layer__bar" style="background:#00c896;"></div>
         <span class="layer__title">Structure</span>
         <span class="layer__desc">Receipt schema validated against the frozen v0.1 specification. Malformed receipts are rejected immediately.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
       <div class="layer">
         <span class="layer__num">L2</span>
         <div class="layer__bar" style="background:#00c896cc;"></div>
         <span class="layer__title">Sequence</span>
         <span class="layer__desc">Receipt counter and session binding verified. Out-of-order receipts flag chain integrity violations.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
       <div class="layer">
         <span class="layer__num">L3</span>
         <div class="layer__bar" style="background:#00c89699;"></div>
         <span class="layer__title">Hash</span>
         <span class="layer__desc">RFC 8785 JCS canonicalisation applied. SHA-256 payload hash recomputed and verified against the signed receipt.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
       <div class="layer">
         <span class="layer__num">L4</span>
         <div class="layer__bar" style="background:#00c89666;"></div>
         <span class="layer__title">Signature</span>
         <span class="layer__desc">Ed25519 signature verified against the governance public key. Tampered receipts produce a hard signature failure.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
       <div class="layer">
         <span class="layer__num">L5</span>
         <div class="layer__bar" style="background:#00c89644;"></div>
         <span class="layer__title">Chain</span>
         <span class="layer__desc">Each receipt hashes the previous receipt's hash. Chain continuity verified from genesis to current head.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
       <div class="layer">
         <span class="layer__num">L6</span>
         <div class="layer__bar" style="background:#00c89622;"></div>
         <span class="layer__title">Replay</span>
-        <span class="layer__desc">Intent hash checked against the session registry. Duplicate governed actions within a session are flagged as replay attempts.</span>
-        <span class="layer__status badge badge--allow">PASS</span>
+        <span class="layer__desc">Intent hashes are checked against the session registry, and duplicates are flagged. Unlike the first five checks, this needs access to that registry: a receipt bundle on its own cannot rule out a replay elsewhere.</span>
+        <span class="layer__status badge badge--pending">CHECK</span>
       </div>
     </div>
   </div>
@@ -1159,7 +1167,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
         </div>
         <div class="audience-card__title">Regulated enterprises</div>
-        <div class="audience-card__body">Finance, healthcare, legal, and critical infrastructure operators deploying AI agents who face compliance obligations under the EU AI Act, DORA, or ISO 27001.</div>
+        <div class="audience-card__body">Finance, healthcare, legal, and critical infrastructure operators deploying AI agents who need stronger governance and evidence controls over AI-assisted operations. Relevant frameworks may include the EU AI Act, DORA, GDPR and ISO/IEC 27001, depending on the organisation and its role.</div>
         <div class="audience-card__tags">
           <span class="tag">EU AI Act</span>
           <span class="tag">DORA</span>
@@ -1185,25 +1193,6 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 </section>
 
 <!-- ═══════════════════════════════════════════
-     MODULE: EU AI ACT DEADLINE
-════════════════════════════════════════════ -->
-<section class="section" aria-labelledby="deadline-heading">
-  <div class="container">
-    <span class="label-tag">the deadline</span>
-    <div class="deadline-banner fade-in">
-      <div class="deadline-banner__date">2 AUG 2026</div>
-      <div class="deadline-banner__text">
-        <div class="deadline-banner__title" id="deadline-heading">EU AI Act high-risk obligations come into force</div>
-        <div class="deadline-banner__body">Organisations deploying AI in high-risk categories must demonstrate authorisation controls, audit trails, and independent verifiability. Post-hoc logging does not satisfy the standard. SIRDI does.</div>
-      </div>
-      <div class="deadline-banner__cta">
-        <a href="#access" class="btn btn--primary">Get ready now</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
      MODULE: EARLY ACCESS FORM
 ════════════════════════════════════════════ -->
 <section class="access-section section" id="access" aria-labelledby="access-heading">
@@ -1211,9 +1200,9 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
     <div class="access-inner fade-in">
       <span class="label-tag">early access</span>
       <h2 id="access-heading">Request a pilot</h2>
-      <p class="lead">Limited to MSSPs and regulated operators. We run a structured 14-day pilot with you — live receipt chain, your environment, your proof.</p>
+      <p class="lead">For MSSPs and regulated organisations. A paid, scoped pilot that starts on synthetic data modelled on one of your real workflows. Live systems follow only after data protection and contract terms are agreed.</p>
 
-      <form class="form" id="accessForm" novalidate>
+      <form class="form" id="accessForm">
         <div class="form-row">
           <div class="form-group">
             <label for="name">Full name</label>
@@ -1244,14 +1233,14 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <label for="tooling">Current tooling / AI stack (optional)</label>
           <input type="text" id="tooling" name="tooling" placeholder="e.g. Microsoft Sentinel, OpenClaw, custom agents...">
         </div>
-        <button type="submit" class="btn btn--primary form__submit">Request early access →</button>
-        <p class="form__note">Limited pilot slots · No spam · No obligation · swift fortress ltd</p>
+        <button type="submit" class="btn btn--primary form__submit">Prepare email request →</button>
+        <p class="form__note">This form doesn't send anything to us by itself. It prepares an email in your own mail app, addressed to hello@swiftfortress.live, which you then send. Please don't include confidential or personal data about others.</p>
       </form>
 
       <div class="form__success" id="formSuccess" role="alert">
         <div style="font-size:1.5rem;margin-bottom:0.75rem;">✓</div>
-        <div style="font-weight:700;margin-bottom:0.5rem;">Access request received</div>
-        <div style="color:var(--text-secondary);font-size:12px;">We'll be in touch within 48 hours to schedule your discovery call.</div>
+        <div style="font-weight:700;margin-bottom:0.5rem;">Your email app should now be open</div>
+        <div style="color:var(--text-secondary);font-size:12px;">Press send to submit your request. If nothing opened, email <a href="mailto:hello@swiftfortress.live">hello@swiftfortress.live</a> directly.</div>
       </div>
     </div>
   </div>
@@ -1284,7 +1273,10 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 <script>
 (function() {
   /* Intersection Observer — fade in on scroll */
-  const observer = new IntersectionObserver((entries) => {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+  }
+  const observer = !('IntersectionObserver' in window) ? { observe(){}, unobserve(){} } : new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -1293,6 +1285,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
+  if ('IntersectionObserver' in window) document.documentElement.classList.add('anim-ready');
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
   /* Form submission */
@@ -1306,9 +1299,8 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
     const email = data.get('email')?.trim();
     const company = data.get('company')?.trim();
 
-    if (!name || !email || !company) {
-      const first = form.querySelector('input:invalid, select:invalid');
-      if (first) first.focus();
+    if (!form.checkValidity() || !name || !email || !company) {
+      form.reportValidity();
       return;
     }
 
@@ -1326,16 +1318,14 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
       Or replace with your GHL form embed URL.
     */
 
+    const lines = ['Name: ' + name, 'Company: ' + company, 'Email: ' + email,
+      'Role: ' + (data.get('role') || ''), 'Current tooling: ' + (data.get('tooling') || '')];
+    window.location.href = 'mailto:hello@swiftfortress.live?subject=' +
+      encodeURIComponent('SIRDI pilot request: ' + company) + '&body=' + encodeURIComponent(lines.join('\n'));
+
     form.style.display = 'none';
     success.style.display = 'block';
 
-    /* Optional: push to analytics */
-    if (window.gtag) {
-      window.gtag('event', 'pilot_request', {
-        event_category: 'conversion',
-        event_label: company
-      });
-    }
   });
 
   /* Receipt card hover lift */
@@ -1351,6 +1341,5 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 })();
 </script>
 
-  <script src="sirdi-connector.js" data-portal="landing"></script>
 </body>
 </html>
