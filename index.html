@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SIRDI — Pre-execution governance for AI agents. Cryptographic decision receipts before privileged actions execute. Patent pending GB2605007.0.">
-<meta property="og:title" content="SIRDI — Proof Before Execution">
-<meta property="og:description" content="Can you prove a privileged action was authorised before it executed? SIRDI is designed to.">
+<meta name="description" content="SIRDI is designed to govern privileged AI-agent actions before they run and record each decision in a signed receipt. Demonstrated in a benchmark harness. UK patent application GB2605007.0 pending.">
+<meta property="og:title" content="SIRDI — Signed decision receipts for AI-agent actions">
+<meta property="og:description" content="SIRDI is designed to record authorisation decisions before privileged AI-agent actions run. Signed receipts demonstrated in a benchmark harness.">
 <meta property="og:type" content="website">
 <title>SIRDI — Pre-Execution Governance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -894,6 +894,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         <p class="lead">
           SIRDI is a gate, not a logger. It is designed to establish that a consequential action is authorised before it runs, and to produce a verifiable Receipt of that authorisation.
         </p>
+        <p style="font-family:var(--mono);font-size:11px;letter-spacing:0.04em;color:var(--text-secondary);line-height:1.6;margin:1.25rem 0 2rem;padding-left:0.75rem;border-left:2px solid var(--amber-warn);max-width:520px;">Current status: demonstrated in a benchmark harness. Live enforcement requires an execution adapter validated in your environment.</p>
         <div class="hero__actions">
           <a href="#access" class="btn btn--primary">Request early access</a>
           <a href="#how-it-works" class="btn btn--ghost">See how it works</a>
@@ -922,15 +923,11 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
             </div>
             <div class="receipt-card__row">
               <span class="receipt-card__key">agent</span>
-              <span class="receipt-card__val">openclaw-v2.1</span>
+              <span class="receipt-card__val">example-agent</span>
             </div>
             <div class="receipt-card__row">
               <span class="receipt-card__key">policy_check</span>
               <span class="receipt-card__val receipt-card__val--teal">PASS</span>
-            </div>
-            <div class="receipt-card__row">
-              <span class="receipt-card__key">risk_score</span>
-              <span class="receipt-card__val">0.12</span>
             </div>
             <div class="receipt-card__row">
               <span class="receipt-card__key">human_gate</span>
@@ -974,12 +971,12 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 ════════════════════════════════════════════ -->
 <section class="wedge section--alt fade-in" aria-labelledby="wedge-heading">
   <div class="container">
-    <span class="label-tag">the question that changes everything</span>
+    <span class="label-tag">the question</span>
     <p class="wedge__question" id="wedge-heading">
       Can you prove a privileged action was <strong>authorised before it executed</strong> — not just logged afterwards?
     </p>
     <p class="wedge__answer">
-      Logs written after the fact show what was recorded. On their own, they don't prove an action was authorised before it ran. SIRDI is designed to produce tamper-evident proof at the point of authorisation, before the action runs, that can be checked with a standalone verifier.
+      Logs written after the fact show what was recorded. On their own, they don't prove an action was authorised before it ran. SIRDI is designed to record the decision at the point of authorisation, before the action runs, in a signed, tamper-evident receipt that can be checked with a standalone verifier.
     </p>
   </div>
 </section>
@@ -990,25 +987,25 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 <section class="section" aria-labelledby="problem-heading">
   <div class="container">
     <span class="label-tag">the gap</span>
-    <h2 id="problem-heading" style="margin-bottom:2.5rem;">Before and after SIRDI</h2>
+    <h2 id="problem-heading" style="margin-bottom:2.5rem;">Authorisation and evidence</h2>
     <div class="contrast-grid fade-in">
       <div class="contrast-grid__pane contrast-grid__pane--problem">
-        <div class="contrast-grid__label">without SIRDI</div>
+        <div class="contrast-grid__label">where controls are missing</div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Privileged AI-agent actions may execute without an independent pre-execution gate</span>
+          <span>Privileged AI-agent actions may run without a prior authorisation check</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Where audit logs are controlled by the operator who ran the action, independent checking is limited</span>
+          <span>Independent review is harder when the only evidence is a log controlled by the operator who ran the action</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Insurance claims, regulatory reviews and client disputes often need evidence beyond the operator's own account</span>
+          <span>An operator's account may need corroborating during an insurance claim, regulatory review or client dispute</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
-          <span>Who approved what has to be pieced together afterwards from emails, tickets and logs</span>
+          <span>If approval isn't linked to the action, reviewers may have to reconstruct it from emails, tickets and logs</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✕</span>
@@ -1016,14 +1013,14 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         </div>
       </div>
       <div class="contrast-grid__pane contrast-grid__pane--solution">
-        <div class="contrast-grid__label">with SIRDI</div>
+        <div class="contrast-grid__label">what SIRDI is designed to add</div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
           <span>Designed to check privileged actions before they run, deny-by-default; live enforcement depends on an integrated execution adapter</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Receipts are verifiable with the standalone kit, without relying on the operator's own log</span>
+          <span>Receipts can be checked with the standalone kit against a supplied public key, without the operator's runtime logs</span>
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
@@ -1031,11 +1028,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         </div>
         <div class="contrast-item">
           <span class="contrast-item__icon">✓</span>
-          <span>Portable receipts can be checked independently during evidence review, without relying on the operator</span>
-        </div>
-        <div class="contrast-item">
-          <span class="contrast-item__icon">✓</span>
-          <span>Designed for agent integration — benchmarked with OpenClaw and Agent Zero</span>
+          <span>Designed to sit between any agent framework and the systems it acts on; current evidence comes from scripted scenarios in a controlled benchmark harness</span>
         </div>
       </div>
     </div>
@@ -1064,7 +1057,7 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
         <div class="step__title">Evaluate</div>
-        <div class="step__body">Policy, risk and human-approval checks run before any decision is issued. Each approval is designed to bind to the exact action and scope it covers.</div>
+        <div class="step__body">SIRDI is designed to run policy and any required human-approval checks before a decision is issued, and to bind each approval to the exact action and scope it covers.</div>
       </div>
       <div class="step">
         <div class="step__num">03</div>
@@ -1146,20 +1139,18 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
 ════════════════════════════════════════════ -->
 <section class="section section--alt" id="for-whom" aria-labelledby="audience-heading">
   <div class="container">
-    <span class="label-tag">who it's built for</span>
-    <h2 id="audience-heading" style="margin-bottom:2.5rem;">Built for high-trust operators</h2>
+    <span class="label-tag">who it's for</span>
+    <h2 id="audience-heading" style="margin-bottom:2.5rem;">Who it's for</h2>
     <div class="audience-grid fade-in">
       <div class="audience-card">
         <div class="audience-card__icon">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         </div>
         <div class="audience-card__title">MSSPs &amp; Security MSPs</div>
-        <div class="audience-card__body">Serve regulated clients who need proof of authorisation, not just audit logs. Add a defensible governance layer to your AI-assisted SOC operations.</div>
+        <div class="audience-card__body">For MSSPs serving regulated clients who want a record of authorisation decisions for AI-assisted SOC workflows, not just audit logs.</div>
         <div class="audience-card__tags">
-          <span class="tag">MDR</span>
-          <span class="tag">XDR</span>
-          <span class="tag">SOC automation</span>
-          <span class="tag">NIS2</span>
+          <span class="tag">SOC workflows</span>
+          <span class="tag">AI-assisted operations</span>
         </div>
       </div>
       <div class="audience-card">
@@ -1169,10 +1160,10 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         <div class="audience-card__title">Regulated enterprises</div>
         <div class="audience-card__body">Finance, healthcare, legal, and critical infrastructure operators deploying AI agents who need stronger governance and evidence controls over AI-assisted operations. Relevant frameworks may include the EU AI Act, DORA, GDPR and ISO/IEC 27001, depending on the organisation and its role.</div>
         <div class="audience-card__tags">
-          <span class="tag">EU AI Act</span>
-          <span class="tag">DORA</span>
-          <span class="tag">ISO 27001</span>
-          <span class="tag">GDPR</span>
+          <span class="tag">finance</span>
+          <span class="tag">healthcare</span>
+          <span class="tag">legal</span>
+          <span class="tag">critical infrastructure</span>
         </div>
       </div>
       <div class="audience-card">
@@ -1180,12 +1171,10 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
         </div>
         <div class="audience-card__title">AI-native builders</div>
-        <div class="audience-card__body">Founders and engineering teams shipping autonomous agents in production who need tamper-evident evidence infrastructure before regulators or clients ask for it.</div>
+        <div class="audience-card__body">Founders and engineering teams building AI agents who need a tamper-evident record of authorisation decisions for privileged actions.</div>
         <div class="audience-card__tags">
-          <span class="tag">agentic AI</span>
-          <span class="tag">OpenClaw</span>
-          <span class="tag">Agent Zero</span>
-          <span class="tag">autonomous ops</span>
+          <span class="tag">agent frameworks</span>
+          <span class="tag">privileged actions</span>
         </div>
       </div>
     </div>
@@ -1200,9 +1189,9 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
     <div class="access-inner fade-in">
       <span class="label-tag">early access</span>
       <h2 id="access-heading">Request a pilot</h2>
-      <p class="lead">For MSSPs and regulated organisations. A paid, scoped pilot that starts on synthetic data modelled on one of your real workflows. Live systems follow only after data protection and contract terms are agreed.</p>
+      <p class="lead">For MSSPs and regulated organisations. A paid, scoped pilot using synthetic data modelled on one of your workflows. Any later use of live systems needs separate agreement on scope, data protection and contract terms, and an execution adapter validated in your environment.</p>
 
-      <form class="form" id="accessForm">
+      <form class="form" id="accessForm" action="mailto:hello@swiftfortress.live" method="post" enctype="text/plain">
         <div class="form-row">
           <div class="form-group">
             <label for="name">Full name</label>
@@ -1231,10 +1220,10 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
         </div>
         <div class="form-group">
           <label for="tooling">Current tooling / AI stack (optional)</label>
-          <input type="text" id="tooling" name="tooling" placeholder="e.g. Microsoft Sentinel, OpenClaw, custom agents...">
+          <input type="text" id="tooling" name="tooling" placeholder="e.g. Microsoft Sentinel, custom agents (no confidential details)">
         </div>
         <button type="submit" class="btn btn--primary form__submit">Prepare email request →</button>
-        <p class="form__note">This form doesn't send anything to us by itself. It prepares an email in your own mail app, addressed to hello@swiftfortress.live, which you then send. Please don't include confidential or personal data about others.</p>
+        <p class="form__note">This button opens a draft email to hello@swiftfortress.live in your own mail app. Nothing is sent until you press send. If no draft opens, email us directly. Please don't include confidential information or personal data about other people. <a href="privacy.html">How we use your enquiry data</a>.</p>
       </form>
 
       <div class="form__success" id="formSuccess" role="alert">
@@ -1254,13 +1243,15 @@ h3 { font-size: clamp(1rem, 2vw, 1.3rem); }
     <div class="footer__inner">
       <div class="footer__brand">
         <div class="footer__logo">SIRDI</div>
-        <p class="footer__tagline">Pre-execution governance for AI agents. Signed receipts before privileged actions run.</p>
+        <p class="footer__tagline">Designed to govern privileged AI-agent actions before they run. Signed decision receipts demonstrated in a benchmark harness.</p>
       </div>
       <div class="footer__meta">
-        <span>Swift Fortress Ltd</span>
-        <span>Patent pending GB2605007.0</span>
-        <span>Trademark: SIRDI Class 42</span>
+        <span>Swift Fortress Ltd · Registered in England and Wales · Company no. 16622329</span>
+        <span>Registered office: 86–90 Paul Street, London, EC2A 4NE</span>
+        <span>SIRDI is a registered UK trade mark of Swift Fortress Strategic Systems Ltd (UK00004351031, Class 42)</span>
+        <span>UK patent application GB2605007.0 pending</span>
         <a href="mailto:hello@swiftfortress.live">hello@swiftfortress.live</a>
+        <a href="privacy.html">Privacy notice</a>
         <span style="margin-top:0.5rem;color:var(--text-tertiary);">© 2026 Swift Fortress Ltd. All rights reserved.</span>
       </div>
     </div>
